@@ -1,0 +1,19 @@
+version: '3'
+
+volumes:
+  pg_data:
+
+services:
+  db:
+    env_file: .env
+    image: postgres:13
+    container_name: meeting_rooms_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: meetingrooms
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg_data:/var/lib/postgresql/data
