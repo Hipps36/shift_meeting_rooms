@@ -1,4 +1,6 @@
-from pydantic import BaseSettings
+from typing import Optional
+
+from pydantic import BaseSettings, EmailStr
 
 
 class Settings(BaseSettings):
@@ -6,6 +8,8 @@ class Settings(BaseSettings):
     description: str = 'Веб-сервис для бронирование переговорок'
     database_url: str
     secret: str
+    first_superuser_email: Optional[EmailStr]
+    first_superuser_password: Optional[str]
 
     class Config:
         env_file = '.env'
