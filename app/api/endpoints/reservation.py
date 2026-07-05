@@ -50,7 +50,7 @@ async def get_all_reservations(
         session: AsyncSession = Depends(get_async_session)
 ):
     """
-    Просмотр всех броней.
+    Получение всех броней.
 
     Только для суперюзеров.
     """
@@ -116,7 +116,11 @@ async def get_my_reservations(
         session: AsyncSession = Depends(get_async_session),
         user: User = Depends(current_user)
 ):
-    """Получает список всех бронирований для текущего пользователя."""
+    """
+    Получение списока всех бронирований для текущего пользователя.
+
+    Только для авторизованных пользователей.
+    """
     reservations = await reservation_crud.get_by_user(
         session=session, user=user
     )
