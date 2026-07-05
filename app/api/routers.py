@@ -1,4 +1,3 @@
-# app/api/routers.py
 from fastapi import APIRouter
 
 from app.api.endpoints import (
@@ -7,9 +6,9 @@ from app.api.endpoints import (
 
 main_router = APIRouter()
 main_router.include_router(
-    meeting_room_router, prefix='/meeting_rooms', tags=['Meeting Rooms']
+    meeting_room_router, prefix='/meeting_rooms', tags=['Переговорные комнаты']
 )
 main_router.include_router(
-    reservation_router, prefix='/reservations', tags=['Reservations']
+    reservation_router, prefix='/reservations', tags=['Бронирования']
 )
 main_router.include_router(user_router)

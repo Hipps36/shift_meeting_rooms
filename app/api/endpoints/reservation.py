@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.validators import (
@@ -8,8 +9,8 @@ from app.api.validators import (
 )
 from app.core.db import get_async_session
 from app.core.user import current_superuser, current_user
-from app.crud.reservation import reservation_crud
-from app.schemas.reservation import (
+from app.crud import reservation_crud
+from app.schemas import (
     ReservationCreate, ReservationDB, ReservationUpdate
 )
 from app.models import User
@@ -23,6 +24,11 @@ async def create_reservation(
         session: AsyncSession = Depends(get_async_session),
         user: User = Depends(current_user),
 ):
+    """
+    Создание бронирования.
+
+    Только для авторизованных пользователей.
+    """
     await check_meeting_room_exists(
         reservation.meetingroom_id, session
     )
@@ -43,7 +49,11 @@ async def create_reservation(
 async def get_all_reservations(
         session: AsyncSession = Depends(get_async_session)
 ):
-    """Только для суперюзеров."""
+    """
+    Просмотр всех броней.
+
+    Только для суперюзеров.
+    """
     reservations = await reservation_crud.get_multi(session)
     return reservations
 
@@ -54,7 +64,11 @@ async def delete_reservation(
         session: AsyncSession = Depends(get_async_session),
         user: User = Depends(current_user),
 ):
-    """Для суперюзеров или создателей объекта бронирования."""
+    """
+    Удаление бронирования.
+
+    Для суперюзеров или создателей объекта бронирования.
+    """
     reservation = await check_reservation_before_edit(
         reservation_id, session, user
     )
@@ -71,7 +85,11 @@ async def update_reservation(
         session: AsyncSession = Depends(get_async_session),
         user: User = Depends(current_user),
 ):
-    """Для суперюзеров или создателей объекта бронирования."""
+    """
+    Частичное обновление бронирования.
+
+    Для суперюзеров или создателей объекта бронирования.
+    """
     reservation = await check_reservation_before_edit(
         reservation_id, session, user
     )
@@ -87,22 +105,6 @@ async def update_reservation(
         session=session,
     )
     return reservation
-
-
-@router.get(
-    '/{meeting_room_id}/reservations',
-    response_model=list[ReservationDB],
-    response_model_exclude={'user_id'},
-)
-async def get_reservations_for_room(
-        meeting_room_id: int,
-        session: AsyncSession = Depends(get_async_session),
-):
-    await check_meeting_room_exists(meeting_room_id, session)
-    reservations = await reservation_crud.get_future_reservations_for_room(
-        room_id=meeting_room_id, session=session
-    )
-    return reservations
 
 
 @router.get(
